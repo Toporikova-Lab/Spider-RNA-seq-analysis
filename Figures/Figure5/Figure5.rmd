@@ -1,0 +1,278 @@
+---
+title: "R Notebook"
+output:
+  word_document: default
+  html_notebook: default
+---
+
+
+```{r}
+library( ggplot2 )
+library( scales )
+library( ggpubr )
+```
+
+```{r}
+# Here is your data from REVIGO. Scroll down for plot configuration options.
+
+revigo.names <- c("term_ID","description","frequency_%","plot_X","plot_Y","plot_size","log10_p_value","uniqueness","dispensability");
+
+revigo.data <- rbind(c("GO:0006950","response to stress", 4.575, 5.632,-3.955, 5.769,-1.0104,0.776,0.000),
+c("GO:0007010","cytoskeleton organization", 0.786, 4.971, 2.780, 5.004,-1.4116,0.648,0.000),
+c("GO:0008150","biological_process",100.000,-6.362,-2.808, 7.108,-1.1605,1.000,0.000),
+c("GO:0009790","embryo development", 0.311, 0.638, 6.968, 4.600,-1.6447,0.733,0.000),
+c("GO:0016192","vesicle-mediated transport", 1.085,-5.081, 2.798, 5.144,-1.2709,0.703,0.000),
+c("GO:0008219","cell death", 0.458, 0.497,-5.826, 4.769,-1.3086,0.697,0.073),
+c("GO:0051301","cell division", 1.230,-1.686,-5.607, 5.198,-1.0203,0.695,0.191),
+c("GO:0006605","protein targeting", 0.694,-4.309, 3.934, 4.949,-1.0584,0.703,0.301),
+c("GO:0061024","membrane organization", 0.759, 5.297, 2.027, 4.989,-1.1760,0.648,0.501));
+
+
+one.data <- data.frame(revigo.data);
+names(one.data) <- revigo.names;
+one.data <- one.data [(one.data$plot_X != "null" & one.data$plot_Y != "null"), ];
+one.data$plot_X <- as.numeric( as.character(one.data$plot_X) );
+one.data$plot_Y <- as.numeric( as.character(one.data$plot_Y) );
+one.data$plot_size <- as.numeric( as.character(one.data$plot_size) );
+one.data$log10_p_value <- as.numeric( as.character(one.data$log10_p_value) );
+one.data$frequency <- as.numeric( as.character(one.data$frequency) );
+one.data$uniqueness <- as.numeric( as.character(one.data$uniqueness) );
+one.data$dispensability <- as.numeric( as.character(one.data$dispensability) );
+#head(one.data);
+
+
+# --------------------------------------------------------------------------
+# Names of the axes, sizes of the numbers and letters, names of the columns,
+# etc. can be changed below
+
+p1 <- ggplot( data = one.data );
+p1 <- p1 + geom_point( aes( plot_X, plot_Y, colour = log10_p_value, size = plot_size), alpha = I(0.6) ) + scale_size_area();
+p1 <- p1 + scale_colour_gradientn( colours = c("blue", "green", "yellow", "red"), limits = c( min(one.data$log10_p_value), 0) );
+p1 <- p1 + geom_point( aes(plot_X, plot_Y, size = plot_size), shape = 21, fill = "transparent", colour = I (alpha ("black", 0.6) )) + scale_size_area();
+p1 <- p1 + scale_size( range=c(5, 30)) + theme_bw(); # + scale_fill_gradientn(colours = heat_hcl(7), limits = c(-300, 0) );
+ex <- one.data [ one.data$dispensability < 0.15, ]; 
+p1 <- p1 + geom_text( data = ex, aes(plot_X, plot_Y, label = description), colour = I(alpha("black", 0.85)), size = 3 );
+p1 <- p1 + labs (y = "semantic space x", x = "semantic space y");
+p1 <- p1 + theme(legend.key = element_blank()) ;
+one.x_range = max(one.data$plot_X) - min(one.data$plot_X);
+one.y_range = max(one.data$plot_Y) - min(one.data$plot_Y);
+p1 <- p1 + xlim(min(one.data$plot_X)-one.x_range/10,max(one.data$plot_X)+one.x_range/10);
+p1 <- p1 + ylim(min(one.data$plot_Y)-one.y_range/10,max(one.data$plot_Y)+one.y_range/10);
+
+
+
+p1<- p1+ labs(title = "et7-pulse/no pulse")
+p1 <- p1 + theme(plot.title.position="panel",plot.title = element_text(hjust = 0.5,size=14))
+# --------------------------------------------------------------------------
+# Output the plot to screen
+
+t7_bubbleplot <- p1
+t7_bubbleplot
+```
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------------
+
+t16 data from REVIGO
+```{r}
+
+revigo.names <- c("term_ID","description","frequency_%","plot_X","plot_Y","plot_size","log10_p_value","uniqueness","dispensability");
+
+revigo.data <- rbind(c("GO:0006950","response to stress", 4.575, 0.000, 0.954, 5.769,-1.2947,0.002,0.000),
+c("GO:0007155","cell adhesion", 0.544, 0.995, 0.000, 4.844,-1.2284,0.000,0.000));
+
+one.data <- data.frame(revigo.data);
+names(one.data) <- revigo.names;
+one.data <- one.data [(one.data$plot_X != "null" & one.data$plot_Y != "null"), ];
+one.data$plot_X <- as.numeric( as.character(one.data$plot_X) );
+one.data$plot_Y <- as.numeric( as.character(one.data$plot_Y) );
+one.data$plot_size <- as.numeric( as.character(one.data$plot_size) );
+one.data$log10_p_value <- as.numeric( as.character(one.data$log10_p_value) );
+one.data$frequency <- as.numeric( as.character(one.data$frequency) );
+one.data$uniqueness <- as.numeric( as.character(one.data$uniqueness) );
+one.data$dispensability <- as.numeric( as.character(one.data$dispensability) );
+#head(one.data);
+
+
+# --------------------------------------------------------------------------
+# Names of the axes, sizes of the numbers and letters, names of the columns,
+# etc. can be changed below
+
+p1 <- ggplot( data = one.data );
+p1 <- p1 + geom_point( aes( plot_X, plot_Y, colour = log10_p_value, size = plot_size), alpha = I(0.6) ) + scale_size_area();
+p1 <- p1 + scale_colour_gradientn( colours = c("blue", "green", "yellow", "red"), limits = c( min(one.data$log10_p_value), 0) );
+p1 <- p1 + geom_point( aes(plot_X, plot_Y, size = plot_size), shape = 21, fill = "transparent", colour = I (alpha ("black", 0.6) )) + scale_size_area();
+p1 <- p1 + scale_size( range=c(5, 30)) + theme_bw(); # + scale_fill_gradientn(colours = heat_hcl(7), limits = c(-300, 0) );
+ex <- one.data [ one.data$dispensability < 0.15, ]; 
+p1 <- p1 + geom_text( data = ex, aes(plot_X, plot_Y, label = description), colour = I(alpha("black", 0.85)), size = 3 );
+p1 <- p1 + labs (y = "semantic space x", x = "semantic space y");
+p1 <- p1 + theme(legend.key = element_blank()) ;
+one.x_range = max(one.data$plot_X) - min(one.data$plot_X);
+one.y_range = max(one.data$plot_Y) - min(one.data$plot_Y);
+p1 <- p1 + xlim(min(one.data$plot_X)-one.x_range/10,max(one.data$plot_X)+one.x_range/10);
+p1 <- p1 + ylim(min(one.data$plot_Y)-one.y_range/10,max(one.data$plot_Y)+one.y_range/10);
+
+
+p1<- p1+ labs(title = "et16-pulse/no pulse")
+p1 <- p1 + theme(plot.title.position="panel",plot.title = element_text(hjust = 0.5,size=14))
+# --------------------------------------------------------------------------
+# Output the plot to screen
+
+t16_bubbleplot <- p1
+
+```
+
+
+```{r}
+t16_bubbleplot
+
+```
+
+---------------------------------------------------------------------------------------------------------------
+
+Pulse data from REVIGO
+```{r}
+
+revigo.names <- c("term_ID","description","frequency_%","plot_X","plot_Y","plot_size","log10_p_value","uniqueness","dispensability");
+revigo.data <- rbind(c("GO:0006950","response to stress", 4.575, 4.775, 4.665, 5.769,-1.0731,0.847,0.000),
+c("GO:0007010","cytoskeleton organization", 0.786, 0.423, 6.915, 5.004,-2.5599,0.731,0.000),
+c("GO:0008150","biological_process",100.000, 2.055,-5.668, 7.108,-1.3530,1.000,0.000),
+c("GO:0019748","secondary metabolic process", 0.138, 1.650,-0.197, 4.247,-2.2762,0.796,0.000),
+c("GO:0040007","growth", 0.317, 5.207,-3.197, 4.609,-1.4179,0.841,0.000),
+c("GO:0071554","cell wall organization or biogenesis", 0.950, 6.215, 0.974, 5.086,-1.0666,0.808,0.034),
+c("GO:0006412","translation", 5.686,-1.688,-6.563, 5.863,-1.2495,0.807,0.043),
+c("GO:0009790","embryo development", 0.311,-5.987, 3.390, 4.600,-1.7608,0.622,0.066),
+c("GO:0008219","cell death", 0.458,-4.811,-3.202, 4.769,-1.4025,0.743,0.073),
+c("GO:0051301","cell division", 1.230,-6.470,-2.438, 5.198,-1.0148,0.737,0.191),
+c("GO:0022607","cellular component assembly", 2.484,-0.155, 7.136, 5.503,-1.4354,0.730,0.570),
+c("GO:0030154","cell differentiation", 1.133,-5.821, 1.518, 5.162,-1.0971,0.563,0.685),
+c("GO:0048646","anatomical structure formation involved in morphogenesis", 0.409,-5.544, 3.590, 4.720,-1.0527,0.650,0.696));
+
+one.data <- data.frame(revigo.data);
+names(one.data) <- revigo.names;
+one.data <- one.data [(one.data$plot_X != "null" & one.data$plot_Y != "null"), ];
+one.data$plot_X <- as.numeric( as.character(one.data$plot_X) );
+one.data$plot_Y <- as.numeric( as.character(one.data$plot_Y) );
+one.data$plot_size <- as.numeric( as.character(one.data$plot_size) );
+one.data$log10_p_value <- as.numeric( as.character(one.data$log10_p_value) );
+one.data$frequency <- as.numeric( as.character(one.data$frequency) );
+one.data$uniqueness <- as.numeric( as.character(one.data$uniqueness) );
+one.data$dispensability <- as.numeric( as.character(one.data$dispensability) );
+#head(one.data);
+
+
+# --------------------------------------------------------------------------
+# Names of the axes, sizes of the numbers and letters, names of the columns,
+# etc. can be changed below
+
+p1 <- ggplot( data = one.data );
+p1 <- p1 + geom_point( aes( plot_X, plot_Y, colour = log10_p_value, size = plot_size), alpha = I(0.6) ) + scale_size_area();
+p1 <- p1 + scale_colour_gradientn( colours = c("blue", "green", "yellow", "red"), limits = c( min(one.data$log10_p_value), 0) );
+p1 <- p1 + geom_point( aes(plot_X, plot_Y, size = plot_size), shape = 21, fill = "transparent", colour = I (alpha ("black", 0.6) )) + scale_size_area();
+p1 <- p1 + scale_size( range=c(5, 30)) + theme_bw(); # + scale_fill_gradientn(colours = heat_hcl(7), limits = c(-300, 0) );
+ex <- one.data [ one.data$dispensability < 0.15, ]; 
+p1 <- p1 + geom_text( data = ex, aes(plot_X, plot_Y, label = description), colour = I(alpha("black", 0.85)), size = 3 );
+p1 <- p1 + labs (y = "semantic space x", x = "semantic space y");
+p1 <- p1 + theme(legend.key = element_blank()) ;
+one.x_range = max(one.data$plot_X) - min(one.data$plot_X);
+one.y_range = max(one.data$plot_Y) - min(one.data$plot_Y);
+p1 <- p1 + xlim(min(one.data$plot_X)-one.x_range/10,max(one.data$plot_X)+one.x_range/10);
+p1 <- p1 + ylim(min(one.data$plot_Y)-one.y_range/10,max(one.data$plot_Y)+one.y_range/10);
+
+p1<- p1+ labs(title = "Pulse-et7/et16")
+p1 <- p1 + theme(plot.title.position="panel",plot.title = element_text(hjust = 0.5,size=14))
+# --------------------------------------------------------------------------
+# Output the plot to screen
+
+Pulse_bubbleplot <- p1
+
+
+
+```
+
+
+
+```{r}
+Pulse_bubbleplot 
+
+```
+
+
+---------------------------------------------------------------------------------------------------------------
+
+No Pulse data from REVIGO
+```{r}
+
+revigo.names <- c("term_ID","description","frequency_%","plot_X","plot_Y","plot_size","log10_p_value","uniqueness","dispensability");
+revigo.data <- rbind(c("GO:0005975","carbohydrate metabolic process", 5.260, 3.999, 4.164, 5.829,-1.1048,0.277,0.000),
+c("GO:0008283","cell proliferation", 0.394,-5.606, 1.381, 4.704,-1.3169,0.220,0.000),
+c("GO:0007568","aging", 0.088, 1.607,-5.545, 4.052,-1.2243,0.219,0.065));
+
+one.data <- data.frame(revigo.data);
+names(one.data) <- revigo.names;
+one.data <- one.data [(one.data$plot_X != "null" & one.data$plot_Y != "null"), ];
+one.data$plot_X <- as.numeric( as.character(one.data$plot_X) );
+one.data$plot_Y <- as.numeric( as.character(one.data$plot_Y) );
+one.data$plot_size <- as.numeric( as.character(one.data$plot_size) );
+one.data$log10_p_value <- as.numeric( as.character(one.data$log10_p_value) );
+one.data$frequency <- as.numeric( as.character(one.data$frequency) );
+one.data$uniqueness <- as.numeric( as.character(one.data$uniqueness) );
+one.data$dispensability <- as.numeric( as.character(one.data$dispensability) );
+#head(one.data);
+
+
+# --------------------------------------------------------------------------
+# Names of the axes, sizes of the numbers and letters, names of the columns,
+# etc. can be changed below
+
+p1 <- ggplot( data = one.data );
+p1 <- p1 + geom_point( aes( plot_X, plot_Y, colour = log10_p_value, size = plot_size), alpha = I(0.6) ) + scale_size_area();
+p1 <- p1 + scale_colour_gradientn( colours = c("blue", "green", "yellow", "red"), limits = c( min(one.data$log10_p_value), 0) );
+p1 <- p1 + geom_point( aes(plot_X, plot_Y, size = plot_size), shape = 21, fill = "transparent", colour = I (alpha ("black", 0.6) )) + scale_size_area();
+p1 <- p1 + scale_size( range=c(5, 30)) + theme_bw(); # + scale_fill_gradientn(colours = heat_hcl(7), limits = c(-300, 0) );
+ex <- one.data [ one.data$dispensability < 0.15, ]; 
+p1 <- p1 + geom_text( data = ex, aes(plot_X, plot_Y, label = description), colour = I(alpha("black", 0.85)), size = 3 );
+p1 <- p1 + labs (y = "semantic space x", x = "semantic space y");
+p1 <- p1 + theme(legend.key = element_blank()) ;
+one.x_range = max(one.data$plot_X) - min(one.data$plot_X);
+one.y_range = max(one.data$plot_Y) - min(one.data$plot_Y);
+p1 <- p1 + xlim(min(one.data$plot_X)-one.x_range/10,max(one.data$plot_X)+one.x_range/10);
+p1 <- p1 + ylim(min(one.data$plot_Y)-one.y_range/10,max(one.data$plot_Y)+one.y_range/10);
+
+
+p1  <- p1 + labs(title = "No Pulse-et7/et16")
+p1 <- p1 + theme(plot.title.position="panel",plot.title = element_text(hjust = 0.5,size=14))
+
+# --------------------------------------------------------------------------
+# Output the plot to screen
+
+
+
+No_Pulse_bubbleplot <- p1
+
+
+```
+
+```{r}
+No_Pulse_bubbleplot
+```
+
+
+---------------------------------------------------------------------------------------------------------------
+
+Draw four panel graphs of bubble plots. Use common legend.
+```{r fig.width=12,fig.height=10}
+bubbleplot <- ggarrange(t7_bubbleplot,t16_bubbleplot,Pulse_bubbleplot,No_Pulse_bubbleplot,ncol=2,nrow=2,common.legend=TRUE,legend = "right",labels=c("(A)","(B)","(C)","(D)"),font.label = list(size=12,face="bold"))
+bubbleplot
+```
+```{r fig.width=12,fig.height=10}
+ggsave(bubbleplot, filename = "bubbleplot.png")
+```
+
+
+
+
+
