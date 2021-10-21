@@ -1,0 +1,48 @@
+---
+title: "Table S2"
+output: html_notebook
+---
+
+##Import libraries
+```{r}
+library("Hmisc")
+```
+
+
+##Data Manipulation
+
+```{r}
+#Import clock genes
+clock_genes=read.csv("clock_genes.csv",encoding = "utf-8")
+colnames(clock_genes)="Gene"
+
+##Import de genes(without clock genes)
+all_de_genes = read.csv("all_de_genes_without_clock.csv")
+colnames(all_de_genes)="Gene"
+
+#Rbind the two datasets 
+clock_de = rbind(clock_genes,all_de_genes)
+
+#Import the gene counts data
+RSEM_gene_counts = read.csv("RSEM_gene_counts_matrix_int.csv")
+
+#Merge clock_de with gene counts
+clock_de_read_count = left_join(clock_de,RSEM_gene_counts, by=c("Gene"="X"))
+
+##Transpose
+clock_de_read_count_transpose = t(clock_de_read_count[c(1:534),c(2:21)])
+colnames(clock_de_read_count_transpose) = clock_de_read_count[1:534,]$Gene
+
+##Non square correaltion matrix
+de=clock_de_read_count_transpose[,8:534]
+clock=clock_de_read_count_transpose[,1:7]
+```
+
+## Calculate the correlation between clock genes and other differentially expressed genes
+```{r}
+cor_res=rcorr(de, clock)
+
+write.csv(round(cor_res$r[,528:534],digits=3),"clock_de_gene_cor_r.csv")
+write.csv(round(cor_res$P[,528:534],digits=3),"clock_de_gene_cor_p.csv")
+```
+
