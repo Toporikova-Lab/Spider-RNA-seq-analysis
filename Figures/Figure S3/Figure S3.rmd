@@ -1,0 +1,100 @@
+---
+title: "Figure S3"
+output: html_notebook
+---
+
+
+## Import libraries
+```{r}
+library(ggplot2)
+library(readxl)
+library(ggthemes)
+```
+
+## Import data
+```{r}
+TPM =read_excel("Clock_tpm.xlsx",sheet=1,col_names = TRUE,col_types = NULL,  skip = 0)
+```
+
+## Plot Figure S3 A-G
+```{r}
+F1=ggplot(TPM, aes(x=condition,y=Cycle)) + 
+  geom_boxplot(outlier.shape = NA)+ 
+  geom_jitter(size=2,width=0.2,alpha=0.5,color="Blue")+
+  theme_clean() +
+  xlab("Experimental Condition")+
+  ylab("TPM")+
+  ggtitle("Cycle")
+```
+
+```{r}
+F2=ggplot(TPM, aes(x=condition,y=Clock)) + 
+  geom_boxplot(outlier.shape = NA)+ 
+  geom_jitter(size=2,width=0.2,alpha=0.5,color="Blue")+
+  theme_clean() +
+  xlab("Experimental Condition")+
+  ylab("TPM")+
+  ggtitle("Clock")
+```
+
+```{r}
+F3=ggplot(TPM, aes(x=condition,y=Doubletime)) + 
+  geom_boxplot(outlier.shape = NA)+ 
+  geom_jitter(size=2,width=0.2,alpha=0.5,color="Blue")+
+  theme_clean() +
+  xlab("Experimental Condition")+
+  ylab("TPM")+
+  ggtitle("Doubletime")
+```
+
+```{r}
+F4=ggplot(TPM, aes(x=condition,y=Period)) + 
+  geom_boxplot(outlier.shape = NA)+ 
+  geom_jitter(size=2,width=0.2,alpha=0.5,color="Blue")+
+  theme_clean() +
+  xlab("Experimental Condition")+
+  ylab("TPM")+
+  ggtitle("Period")
+```
+
+```{r}
+F5=ggplot(TPM, aes(x=condition,y=Timeless)) + 
+  geom_boxplot(outlier.shape = NA)+ 
+  geom_jitter(size=2,width=0.2,alpha=0.5,color="Blue")+
+  theme_clean() +
+  xlab("Experimental Condition")+
+  ylab("TPM")+
+  ggtitle("Timeless")
+```
+
+```{r}
+F6=ggplot(TPM, aes(x=condition,y=Cry1)) + 
+  geom_boxplot(outlier.shape = NA)+ 
+  geom_jitter(size=2,width=0.2,alpha=0.5,color="Blue")+
+  theme_clean() +
+  xlab("Experimental Condition")+
+  ylab("TPM")+
+  ggtitle("Cry1")
+```
+
+```{r}
+F7=ggplot(TPM, aes(x=condition,y=CRY2)) + 
+  geom_boxplot(outlier.shape = NA)+ 
+  geom_jitter(size=2,width=0.2,alpha=0.5,color="Blue")+
+  theme_clean() +
+  xlab("Experimental Condition")+
+  ylab("TPM")+
+  ggtitle("Cry2")
+```
+
+## Combine Figure S3 A-G
+```{r  fig.width=10,fig.height=12}
+ggarrange(F1,F2,F3,F4,F5,F6,F7,ncol=2,nrow=4,labels=c("(A)","(B)","(C)","(D)","(E)","(F)","(G)"))
+```
+
+## Save Figure S3 as pdf
+```{r fig.width=10,fig.height=12}
+pdf("Clock_TPM_boxlot.pdf")
+ggarrange(F1,F2,F3,F4,F5,F6,F7,ncol=2,nrow=4,labels=c("(A)","(B)","(C)","(D)","(E)","(F)","(G)"))
+dev.off()
+```
