@@ -1,0 +1,186 @@
+---
+title: "Figure S2"
+output: html_notebook
+---
+
+
+
+```{r}
+library(ggplot2)
+library(readxl)
+```
+
+## Figure S2A Barplot
+```{r}
+t7_data <- data.frame(
+  name=c("upregulated","downregulated") ,  
+  value=c(71,211)
+  )
+
+# Barplot
+ggplot(t7_data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity",aes(fill=name),width = 0.7,show.legend = FALSE)+
+  theme_classic(base_size = 16)+
+    scale_fill_manual(values=c("red","blue"),breaks=c("upregulated","downregulated"))+
+  geom_text(aes(label=value),position="stack",vjust=-0.5)+
+  xlab(NULL)+
+  ylab("Number of DEGs")
+```
+## Figure S2A Volcano plot
+```{r}
+t7_DE=read.csv("t7_DE.csv")
+```
+
+
+```{r}
+spiders_res_edgeR_t7 <- data.frame(t7_DE) %>% mutate(Significant = p.adjust(t7_DE$PValue[t7_DE$logFC != 0], method="BH")<0.05)
+spiders_res_edgeR_t7$Significant[spiders_res_edgeR_t7$Significant==TRUE & spiders_res_edgeR_t7$logFC>1] <- "upregulated"
+spiders_res_edgeR_t7$Significant[spiders_res_edgeR_t7$Significant==TRUE & spiders_res_edgeR_t7$logFC<(-1)] <- "downregulated"
+spiders_res_edgeR_t7$Significant[spiders_res_edgeR_t7$Significant==FALSE | spiders_res_edgeR_t7$Significant==TRUE ] <- "unchange"
+```
+
+
+```{r}
+t7_volcano_plot <-ggplot(spiders_res_edgeR_t7,aes(color=Significant)) + 
+        geom_point(aes(x = logFC, y = -log10(FDR))) + 
+        scale_color_manual(values=c("red", "blue","black"),breaks = c("upregulated","downregulated","unchange"))+
+        xlab("log fold change") + 
+        ylab("-log10 FDR") +
+        geom_hline(yintercept=1,color="black",linetype = 'dotted')+
+        geom_vline(xintercept=1,color="red",linetype = 'dotted')+ 
+        geom_vline(xintercept=-1,color="blue",linetype = 'dotted')+
+        theme_few()
+t7_volcano_plot 
+```
+
+## Figure S2B Barplot
+```{r}
+t16_data <- data.frame(
+  name=c("upregulated","downregulated") ,  
+  value=c(27,30)
+  )
+
+# Barplot
+ggplot(t16_data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity",aes(fill=name),width = 0.7,show.legend = FALSE)+
+  theme_classic(base_size = 16)+
+  scale_fill_manual(values=c("red","blue"),breaks=c("upregulated","downregulated"))+
+  geom_text(aes(label=value),position="stack",vjust=-0.5)+
+  xlab(NULL)+
+  ylab("Number of DEGs")
+```
+## Figure S2B Volcano plot
+```{r}
+t16_DE=read.csv("t16_DE.csv")
+```
+
+
+```{r}
+spiders_res_edgeR_t16 <- data.frame(t16_DE) %>% mutate(Significant = p.adjust(t16_DE$PValue[Pulse_DE$logFC != 0], method="BH")<0.05)
+
+spiders_res_edgeR_t16$Significant[spiders_res_edgeR_t16$Significant==TRUE & spiders_res_edgeR_t16$logFC>1] <- "upregulated"
+spiders_res_edgeR_t16$Significant[spiders_res_edgeR_t16$Significant==TRUE &spiders_res_edgeR_t16$logFC<(-1)] <- "downregulated"
+spiders_res_edgeR_t16$Significant[spiders_res_edgeR_t16$Significant==FALSE | spiders_res_edgeR_t16$Significant==TRUE] <- "unchange"
+```
+
+
+```{r}
+t16_volcano_plot <- ggplot(spiders_res_edgeR_t16,aes(color=Significant)) + 
+        geom_point(aes(x = logFC, y = -log10(FDR))) + 
+        scale_color_manual(values=c("red", "blue","black"),breaks = c("upregulated","downregulated","unchange"))+
+        xlab("log fold change") + 
+        ylab("-log10 FDR") +
+        geom_hline(yintercept=1,color="black",linetype = 'dotted')+
+        geom_vline(xintercept=1,color="red",linetype = 'dotted')+ 
+        geom_vline(xintercept=-1,color="blue",linetype = 'dotted')+
+        theme_few()
+t16_volcano_plot 
+```
+
+## Figure S2C Barplot
+```{r}
+pulse_data <- data.frame(
+  name=c("upregulated","downregulated") ,  
+  value=c(62,165)
+  )
+
+# Barplot
+ggplot(pulse_data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity",aes(fill=name),width = 0.7,show.legend = FALSE)+
+  theme_classic(base_size = 16)+
+  scale_fill_manual(values=c("red","blue"),breaks=c("upregulated","downregulated"))+
+  geom_text(aes(label=value),position="stack",vjust=-0.5)+
+  xlab(NULL)+
+  ylab("Number of DEGs")
+```
+## Figure S2C Volcano plot
+```{r}
+pulse_DE=read.csv("pulse_DE.csv")
+```
+
+
+```{r}
+spiders_res_edgeR_pulse <- data.frame(pulse_DE) %>% mutate(Significant = p.adjust(pulse_DE$PValue, method="BH")<0.05)
+spiders_res_edgeR_pulse$Significant[spiders_res_edgeR_pulse$Significant==TRUE & spiders_res_edgeR_pulse$logFC>1] <- "upregulated"
+spiders_res_edgeR_pulse$Significant[spiders_res_edgeR_pulse$Significant==TRUE &spiders_res_edgeR_pulse$logFC<(-1)] <- "downregulated"
+spiders_res_edgeR_pulse$Significant[spiders_res_edgeR_pulse$Significant==FALSE | spiders_res_edgeR_pulse$Significant==TRUE] <- "unchange"
+```
+
+
+```{r}
+pulse_volcano_plot<-ggplot(spiders_res_edgeR_pulse,aes(color=Significant)) + 
+        geom_point(aes(x = logFC, y = -log10(FDR))) + 
+        scale_color_manual(values=c("red", "blue","black"),breaks = c("upregulated","downregulated","unchange"))+
+        xlab("log fold change") + 
+        ylab("-log10 FDR") +
+        geom_hline(yintercept=1,color="black",linetype = 'dotted')+
+        geom_vline(xintercept=1,color="red",linetype = 'dotted')+ 
+        geom_vline(xintercept=-1,color="blue",linetype = 'dotted')+
+        theme_few()
+pulse_volcano_plot
+```
+
+
+## Figure S2D Barplot
+```{r}
+no_pulse_data <- data.frame(
+  name=c("upregulated","downregulated") ,  
+  value=c(43,52)
+  )
+
+# Barplot
+ggplot(no_pulse_data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity",aes(fill=name),width = 0.7,show.legend = FALSE)+
+  theme_classic(base_size = 16)+
+  scale_fill_manual(values=c("red","blue"),breaks=c("upregulated","downregulated"))+
+  geom_text(aes(label=value),position="stack",vjust=-0.5)+
+  xlab(NULL)+
+  ylab("Number of DEGs")
+```
+## Figure S2D Volcano plot
+```{r}
+no_pulse_DE=read.csv("no_pulse_DE.csv")
+```
+
+
+```{r}
+spiders_res_edgeR_no_pulse <- data.frame(no_pulse_DE) %>% mutate(Significant = p.adjust(no_pulse_DE$PValue, method="BH")<0.05)
+spiders_res_edgeR_no_pulse$Significant[spiders_res_edgeR_no_pulse$Significant==TRUE & spiders_res_edgeR_no_pulse$logFC>1] <- "upregulated"
+spiders_res_edgeR_no_pulse$Significant[spiders_res_edgeR_no_pulse$Significant==TRUE &spiders_res_edgeR_no_pulse$logFC<(-1)] <- "downregulated"
+spiders_res_edgeR_no_pulse$Significant[spiders_res_edgeR_no_pulse$Significant==FALSE | spiders_res_edgeR_no_pulse$Significant==TRUE] <- "unchange"
+```
+
+
+```{r}
+no_pulse_volcano_plot <- ggplot(spiders_res_edgeR_no_pulse,aes(color=Significant)) + 
+        geom_point(aes(x = logFC, y = -log10(FDR))) + 
+        scale_color_manual(values=c("red", "blue","black"),breaks = c("upregulated","downregulated","unchange"))+
+        xlab("log fold change") + 
+        ylab("-log10 FDR") +
+        geom_hline(yintercept=1,color="black",linetype = 'dotted')+
+        geom_vline(xintercept=1,color="red",linetype = 'dotted')+ 
+        geom_vline(xintercept=-1,color="blue",linetype = 'dotted')+
+        theme_few()
+no_pulse_volcano_plot
+```
+
