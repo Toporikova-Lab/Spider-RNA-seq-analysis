@@ -1,0 +1,140 @@
+---
+title: "Figure 6"
+output: html_notebook
+---
+
+
+## Import libraries
+```{r}
+library(tidyverse, quietly = TRUE)
+library(ggplot2)
+library(ggthemes)
+library(ggpubr)
+library(stringr, quietly = TRUE)
+```
+
+## Import the DE data
+```{r}
+t7_DE = read.csv('t7_DE.csv', header=T, row.names=1, com='', check.names=F)
+t16_DE = read.csv('t16_DE.csv', header=T, row.names=1, com='', check.names=F)
+Pulse_DE = read.csv('pulse_DE.csv', header=T, row.names=1, com='', check.names=F)
+No_Pulse_DE = read.csv('no_pulse_DE.csv', header=T, row.names=1, com='', check.names=F)
+```
+
+## Add a column "GeneID"
+```{r}
+t7_DE =rownames_to_column(t7_DE)
+t16_DE =rownames_to_column(t16_DE)
+Pulse_DE =rownames_to_column(Pulse_DE)
+No_Pulse_DE =rownames_to_column(No_Pulse_DE)
+
+colnames(t7_DE)[colnames(t7_DE)=="rowname"] = "GeneID"
+colnames(t16_DE)[colnames(t16_DE)=="rowname"] = "GeneID"
+colnames(Pulse_DE)[colnames(Pulse_DE)=="rowname"] = "GeneID"
+colnames(No_Pulse_DE)[colnames(No_Pulse_DE)=="rowname"] = "GeneID"
+```
+
+## Add a column "DE" indicating whether the gene is DE at this dataset
+```{r}
+t7_DE$DE=0
+t7_DE$DE[t7_DE$GeneID %in% t7_DEG] = 1
+
+t16_DE$DE=0
+t16_DE$DE[t16_DE$GeneID %in% t16_DEG] = 1
+
+Pulse_DE$DE=0
+Pulse_DE$DE[Pulse_DE$GeneID %in% Pulse_DEG] = 1
+Pulse_DE
+
+No_Pulse_DE$DE=0
+No_Pulse_DE$DE[No_Pulse_DE$GeneID %in% No_Pulse_DEG] = 1
+```
+
+
+## Find the overlapped genes in both figures
+```{r}
+overlap_both <- intersect(total_DE_genes,total_DE_genes2)
+```
+
+## Merge datasets
+```{r}
+#Merge the tables(t3_full_DE_info and t12_full_DE_info)
+combined_table <- inner_join(t7_DE,t16_DE,by="GeneID",suffix = c("_t7","_t16"))
+combined_table <- combined_table[combined_table$GeneID %in% total_DE_genes,]
+combined_table
+#Add a column DE_color indicating de at which dataset
+combined_table$DE_t7[combined_table$DE_t7==1]=2
+combined_table$DE_t7 <- as.numeric(as.character(combined_table$DE_t7))
+combined_table$DE_t16 <- as.numeric(as.character(combined_table$DE_t16))
+combined_table$DE_color <- combined_table$DE_t7 + combined_table$DE_t16
+combined_table$DE_color[combined_table$DE_color==2]="et7"
+combined_table$DE_color[combined_table$DE_color==1]="et16"
+combined_table$DE_color[combined_table$DE_color==3]="both"
+```
+
+```{r}
+#Merge the two datasets(Pulse_full_DE_info and No_Pulse_full_DE_info)
+combined_table2 <- inner_join(Pulse_DE,No_Pulse_DE,by="GeneID",suffix = c("_Pulse","_No_Pulse"))
+combined_table2 <- combined_table2[combined_table2$GeneID %in% total_DE_genes2,]
+
+#Add a column indicating de at which dataset
+combined_table2$DE_Pulse[combined_table2$DE_Pulse==1]=2
+combined_table2$DE_Pulse <- as.numeric(as.character(combined_table2$DE_Pulse))
+combined_table2$DE_No_Pulse <- as.numeric(as.character(combined_table2$DE_No_Pulse))
+combined_table2$DE_color <- combined_table2$DE_Pulse + combined_table2$DE_No_Pulse
+combined_table2$DE_color[combined_table2$DE_color==2]="Pulse"
+combined_table2$DE_color[combined_table2$DE_color==1]="No Pulse"
+combined_table2$DE_color[combined_table2$DE_color==3]="both"
+```
+
+## Add a column "overlap" indicating overlapped in both figures or not
+```{r}
+combined_table$overlap = "no"
+combined_table$overlap[combined_table$GeneID %in% overlap_both]="yes"
+
+combined_table2$overlap = "no"
+combined_table2$overlap[combined_table2$GeneID %in% overlap_both]="yes"
+```
+
+## Plot Figure 6A
+```{r}
+plotA<-ggplot(combined_table, aes(x=logFC_t7, y=logFC_t16,color=DE_color, size=overlap)) +
+  geom_point()+geom_hline(yintercept=0,color="black")+geom_vline(xintercept=0,color="black") + 
+  scale_color_manual("Differential expressed at",values=c("brown1", "deepskyblue2","darkorchid4"),breaks = c("et7","et16","both"))+
+  scale_size_manual("Overlapped in both figures",values = c(1,2),breaks=c("no","yes"))+
+  scale_x_continuous(name="logFC (pulse vs no pulse) at et7", limits=c(-15, 15)) +
+  scale_y_continuous(name="logFC (pulse vs no pulse) at et16",limits=c(-15,15))+
+  theme(panel.grid = element_blank(),rect = element_blank(), axis.line = element_line(color = "grey"),text=element_text(size=12),legend.box.background = element_rect())
+
+plotA
+```
+
+## Plot Figure 6B
+```{r}
+plotB<-ggplot(combined_table2, aes(x=logFC_Pulse, y=logFC_No_Pulse, color=DE_color, size=overlap)) +
+  geom_point(shape=1)+
+  geom_hline(yintercept=0,color="black")+
+  geom_vline(xintercept=0,color="black")  + 
+  scale_color_manual("Differential Expressed at",values=c("brown1", "deepskyblue2","darkorchid4"),breaks = c("Pulse","No Pulse","both"))+
+scale_size_manual("Overlapped in both figures",values = c(1,2),breaks=c("no","yes"))+
+  scale_x_continuous(name="logFC (et7 vs et16) Pulse", limits=c(-15, 15)) +
+  scale_y_continuous(name="logFC (et7 vs et16) No Pulse")+
+  theme(panel.grid = element_blank(),rect = element_blank(), axis.line = element_line(color = "grey"),text=element_text(size=12),legend.box.background = element_rect())
+
+plotB
+```
+
+
+
+## Combine Figure 6A and 6B
+
+```{r fig.width=8,fig.height=10}
+plot <- ggarrange(plotA,plotB,labels=c("(A)","(B)"),nrow = 2,widths = 10,heights = 15)
+plot
+```
+
+## Save Figure 6
+```{r fig.width=8,fig.height=10}
+ggsave("Figure 6.png")
+```
+
