@@ -4,7 +4,7 @@ This folder contains raw data and R scripts needed to reproduce the *Additional 
 
 Run the *Table S2.rmd*, and *clock_de_gene_cor_r.csv* and *clock_de_gene_cor_p.csv* will be generated.
 
-The column names were manually changed in *clock_de_gene_cor_r.csv* and *clock_de_gene_cor_p.csv*:
+The column names were manually changed from Trinity ID to the name of clock genes in *clock_de_gene_cor_r.csv* and *clock_de_gene_cor_p.csv*:
 
 - TRINITY_DN59140_c0_g1--Cycle
 - TRINITY_DN2943_c0_g1--Clock
@@ -13,6 +13,8 @@ The column names were manually changed in *clock_de_gene_cor_r.csv* and *clock_d
 - TRINITY_DN42615_c0_g1--Timeless  
 - TRINITY_DN2770_c0_g1--Cry1  
 - TRINITY_DN308_c1_g1--Cry2
+
+Clock genes were manually removed from the rows.
 
 The two tables were then manually combined into *Additional File 3: Table S2.csv*.
 
