@@ -35,7 +35,7 @@ t7_DE=read.csv("t7_DE.csv")
 
 
 ```{r}
-spiders_res_edgeR_t7 <- data.frame(t7_DE) %>% mutate(Significant = p.adjust(t7_DE$PValue[t7_DE$logFC != 0], method="BH")<0.05)
+spiders_res_edgeR_t7 <- data.frame(t7_DE) %>% mutate(Significant = p.adjust(t7_DE$PValue[t7_DE$logFC != 0], method="BH")<0.05 & (t7_DE$logFC > 1|t7_DE$logFC < -1) )
 spiders_res_edgeR_t7$Significant[spiders_res_edgeR_t7$Significant==TRUE & spiders_res_edgeR_t7$logFC>1] <- "upregulated"
 spiders_res_edgeR_t7$Significant[spiders_res_edgeR_t7$Significant==TRUE & spiders_res_edgeR_t7$logFC<(-1)] <- "downregulated"
 spiders_res_edgeR_t7$Significant[spiders_res_edgeR_t7$Significant==FALSE | spiders_res_edgeR_t7$Significant==TRUE ] <- "unchange"
@@ -78,7 +78,7 @@ t16_DE=read.csv("t16_DE.csv")
 
 
 ```{r}
-spiders_res_edgeR_t16 <- data.frame(t16_DE) %>% mutate(Significant = p.adjust(t16_DE$PValue[t16_DE$logFC != 0], method="BH")<0.05)
+spiders_res_edgeR_t16 <- data.frame(t16_DE) %>% mutate(Significant = p.adjust(t16_DE$PValue, method="BH")<0.05& (t16_DE$logFC > 1|t16_DE$logFC < -1))
 
 spiders_res_edgeR_t16$Significant[spiders_res_edgeR_t16$Significant==TRUE & spiders_res_edgeR_t16$logFC>1] <- "upregulated"
 spiders_res_edgeR_t16$Significant[spiders_res_edgeR_t16$Significant==TRUE &spiders_res_edgeR_t16$logFC<(-1)] <- "downregulated"
@@ -122,7 +122,7 @@ pulse_DE=read.csv("pulse_DE.csv")
 
 
 ```{r}
-spiders_res_edgeR_pulse <- data.frame(pulse_DE) %>% mutate(Significant = p.adjust(pulse_DE$PValue, method="BH")<0.05)
+spiders_res_edgeR_pulse <- data.frame(pulse_DE) %>% mutate(Significant = p.adjust(pulse_DE$PValue, method="BH")<0.05& (pulse_DE$logFC > 1|pulse_DE$logFC < -1))
 spiders_res_edgeR_pulse$Significant[spiders_res_edgeR_pulse$Significant==TRUE & spiders_res_edgeR_pulse$logFC>1] <- "upregulated"
 spiders_res_edgeR_pulse$Significant[spiders_res_edgeR_pulse$Significant==TRUE &spiders_res_edgeR_pulse$logFC<(-1)] <- "downregulated"
 spiders_res_edgeR_pulse$Significant[spiders_res_edgeR_pulse$Significant==FALSE | spiders_res_edgeR_pulse$Significant==TRUE] <- "unchange"
@@ -166,7 +166,7 @@ no_pulse_DE=read.csv("no_pulse_DE.csv")
 
 
 ```{r}
-spiders_res_edgeR_no_pulse <- data.frame(no_pulse_DE) %>% mutate(Significant = p.adjust(no_pulse_DE$PValue, method="BH")<0.05)
+spiders_res_edgeR_no_pulse <- data.frame(no_pulse_DE) %>% mutate(Significant = p.adjust(no_pulse_DE$PValue, method="BH")<0.05& (no_pulse_DE$logFC > 1|no_pulse_DE$logFC < -1))
 spiders_res_edgeR_no_pulse$Significant[spiders_res_edgeR_no_pulse$Significant==TRUE & spiders_res_edgeR_no_pulse$logFC>1] <- "upregulated"
 spiders_res_edgeR_no_pulse$Significant[spiders_res_edgeR_no_pulse$Significant==TRUE &spiders_res_edgeR_no_pulse$logFC<(-1)] <- "downregulated"
 spiders_res_edgeR_no_pulse$Significant[spiders_res_edgeR_no_pulse$Significant==FALSE | spiders_res_edgeR_no_pulse$Significant==TRUE] <- "unchange"
