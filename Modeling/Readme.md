@@ -3,6 +3,6 @@ This figure reproduce numerical experiment for application of light pulse to sim
 
 To generate all figures from the manuscript, follow these steps:
 
-    Download or clone this entire respository into any local directory
-    The scripts in this Folder use Jupyter Notebook with Python 3.6
+    1. Download or clone this entire respository into any local directory
+    2. The scripts in this Folder use Jupyter Notebook with Python 3.6
    
