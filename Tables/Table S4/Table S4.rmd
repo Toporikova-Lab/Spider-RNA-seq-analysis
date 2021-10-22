@@ -16,6 +16,7 @@ t7_DE = read.csv('t7_DE.csv', header=T, row.names=1, com='', check.names=F)
 t16_DE = read.csv('t16_DE.csv', header=T, row.names=1, com='', check.names=F)
 Pulse_DE = read.csv('pulse_DE.csv', header=T, row.names=1, com='', check.names=F)
 No_Pulse_DE = read.csv('no_pulse_DE.csv', header=T, row.names=1, com='', check.names=F)
+genebank=read.csv("TrinityID_info.csv",header=T,fill=T)
 ```
 
 ## Add a column "GeneID"
@@ -97,13 +98,27 @@ combined_table2$overlap[combined_table2$GeneID %in% overlap_both]="yes"
 ```{r}
 result1 <- subset(combined_table[combined_table$logFC_t7<0,])
 result2 <- subset(result1[result1$logFC_t16>0,])
-write.csv(result2,file="second_quadrant_t7t16.csv")
+result2$DE_t7[result2$DE_t7=="0"]="no"
+result2$DE_t7[result2$DE_t7=="2"]="yes"
+result2$DE_t16[result2$DE_t16=="0"]="no"
+result2$DE_t16[result2$DE_t16=="1"]="yes"
+t7t16result<-merge(result2, genebank, by="GeneID")
+t7t16result<-t7t16result[,c("GeneID","logFC_t7","LR_t7","PValue_t7","FDR_t7","DE_t7","logFC_t16","LR_t16","PValue_t16","FDR_t16","DE_t16","match_id","pfam_def","pfam_go","sw_def","sw_go")]
+t7t16result
+write.csv(t7t16result,file="second_quadrant_t7t16.csv")
 ```
 
 ```{r}
 result3 <- subset(combined_table2[combined_table2$logFC_Pulse<0,])
 result4 <- subset(result3[result3$logFC_No_Pulse>0,])
-write.csv(result4,file="second_quadrant_pulsenopulse.csv")
+result4$DE_Pulse[result4$DE_Pulse=="0"]="no"
+result4$DE_Pulse[result4$DE_Pulse=="2"]="yes"
+result4$DE_No_Pulse[result4$DE_No_Pulse=="0"]="no"
+result4$DE_No_Pulse[result4$DE_No_Pulse=="1"]="yes"
+pulsenopulse_result<-merge(result4, genebank, by="GeneID")
+pulsenopulse_result<-pulsenopulse_result[,c("GeneID","logFC_Pulse","LR_Pulse","PValue_Pulse","FDR_Pulse","DE_Pulse","logFC_No_Pulse","LR_No_Pulse","PValue_No_Pulse","FDR_No_Pulse","DE_No_Pulse","match_id","pfam_def","pfam_go","sw_def","sw_go")]
+pulsenopulse_result
+write.csv(pulsenopulse_result,file="second_quadrant_pulsenopulse.csv")
 ```
 
 
