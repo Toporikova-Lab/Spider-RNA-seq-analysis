@@ -8,6 +8,8 @@ output: html_notebook
 ```{r}
 library(ggplot2)
 library(readxl)
+library(dplyr)
+library(ggthemes)
 ```
 
 ## Figure S2A Barplot
@@ -76,7 +78,7 @@ t16_DE=read.csv("t16_DE.csv")
 
 
 ```{r}
-spiders_res_edgeR_t16 <- data.frame(t16_DE) %>% mutate(Significant = p.adjust(t16_DE$PValue[Pulse_DE$logFC != 0], method="BH")<0.05)
+spiders_res_edgeR_t16 <- data.frame(t16_DE) %>% mutate(Significant = p.adjust(t16_DE$PValue[t16_DE$logFC != 0], method="BH")<0.05)
 
 spiders_res_edgeR_t16$Significant[spiders_res_edgeR_t16$Significant==TRUE & spiders_res_edgeR_t16$logFC>1] <- "upregulated"
 spiders_res_edgeR_t16$Significant[spiders_res_edgeR_t16$Significant==TRUE &spiders_res_edgeR_t16$logFC<(-1)] <- "downregulated"
