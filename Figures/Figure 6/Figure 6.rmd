@@ -19,14 +19,24 @@ t7_DE = read.csv('t7_DE.csv', header=T, row.names=1, com='', check.names=F)
 t16_DE = read.csv('t16_DE.csv', header=T, row.names=1, com='', check.names=F)
 Pulse_DE = read.csv('pulse_DE.csv', header=T, row.names=1, com='', check.names=F)
 No_Pulse_DE = read.csv('no_pulse_DE.csv', header=T, row.names=1, com='', check.names=F)
+
+t7_DEG <- rownames(subset(t7_DE, p.adjust(t7_DE$PValue, method="BH")<0.05))
+t16_DEG <- rownames(subset(t16_DE, p.adjust(t16_DE$PValue, method="BH")<0.05))
+Pulse_DEG <- rownames(subset(Pulse_DE, p.adjust(Pulse_DE$PValue, method="BH")<0.05))
+No_Pulse_DEG <- rownames(subset(No_Pulse_DE, p.adjust(No_Pulse_DE$PValue, method="BH")<0.05))
 ```
+
+
+
 
 ## Add a column "GeneID"
 ```{r}
+
 t7_DE =rownames_to_column(t7_DE)
 t16_DE =rownames_to_column(t16_DE)
 Pulse_DE =rownames_to_column(Pulse_DE)
 No_Pulse_DE =rownames_to_column(No_Pulse_DE)
+
 
 colnames(t7_DE)[colnames(t7_DE)=="rowname"] = "GeneID"
 colnames(t16_DE)[colnames(t16_DE)=="rowname"] = "GeneID"
@@ -34,27 +44,40 @@ colnames(Pulse_DE)[colnames(Pulse_DE)=="rowname"] = "GeneID"
 colnames(No_Pulse_DE)[colnames(No_Pulse_DE)=="rowname"] = "GeneID"
 ```
 
+
+
+
+
 ## Add a column "DE" indicating whether the gene is DE at this dataset
 ```{r}
+
+
 t7_DE$DE=0
 t7_DE$DE[t7_DE$GeneID %in% t7_DEG] = 1
 
 t16_DE$DE=0
 t16_DE$DE[t16_DE$GeneID %in% t16_DEG] = 1
 
+
+
 Pulse_DE$DE=0
 Pulse_DE$DE[Pulse_DE$GeneID %in% Pulse_DEG] = 1
-Pulse_DE
 
 No_Pulse_DE$DE=0
 No_Pulse_DE$DE[No_Pulse_DE$GeneID %in% No_Pulse_DEG] = 1
 ```
 
 
+
 ## Find the overlapped genes in both figures
 ```{r}
+total_DE_genes <- unique(c(t7_DEG,t16_DEG))
+total_DE_genes2 <- unique(c(Pulse_DEG,No_Pulse_DEG))
 overlap_both <- intersect(total_DE_genes,total_DE_genes2)
 ```
+
+
+
 
 ## Merge datasets
 ```{r}
@@ -62,6 +85,10 @@ overlap_both <- intersect(total_DE_genes,total_DE_genes2)
 combined_table <- inner_join(t7_DE,t16_DE,by="GeneID",suffix = c("_t7","_t16"))
 combined_table <- combined_table[combined_table$GeneID %in% total_DE_genes,]
 combined_table
+```
+
+
+```{r}
 #Add a column DE_color indicating de at which dataset
 combined_table$DE_t7[combined_table$DE_t7==1]=2
 combined_table$DE_t7 <- as.numeric(as.character(combined_table$DE_t7))
@@ -86,6 +113,10 @@ combined_table2$DE_color[combined_table2$DE_color==2]="Pulse"
 combined_table2$DE_color[combined_table2$DE_color==1]="No Pulse"
 combined_table2$DE_color[combined_table2$DE_color==3]="both"
 ```
+
+
+
+
 
 ## Add a column "overlap" indicating overlapped in both figures or not
 ```{r}
