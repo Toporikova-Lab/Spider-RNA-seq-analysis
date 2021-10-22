@@ -1,6 +1,6 @@
 # Spider-RNA-seq-analysis-Table S4
 
-This folder contains raw data and R scripts needed to reproduce the Additional File 5: Table S4.
+This folder contains raw data and R scripts needed to reproduce the *Additional File 5: Table S4.xlsx*
 
 Run the *Table S4.rmd*, and *second_quadrant_t7t16.csv* and *second_quadrant_pulsenopulse.csv* will be generated.
 
