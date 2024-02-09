@@ -1,0 +1,187 @@
+---
+title: "R Notebook for volcano plots"
+output:
+  html_document:
+    df_print: paged
+---
+
+###Import necessary packages
+```{r}
+library("edgeR")
+library("ggplot2")
+library("ggthemes")
+library("dplyr")
+library(patchwork)
+```
+
+##Download files with DE genes
+```{r}
+t7_DE       <- read.csv('t7_DE.csv'          ,  head = TRUE, row.names = 1)
+t16_DE      <- read.csv('t16_DE.csv'         ,  head = TRUE, row.names = 1)
+pulse_DE    <- read.csv('pulse_DE_005.csv'   ,  head = TRUE, row.names = 1)
+no_pulse_DE <- read.csv('no_pulse_DE_005.csv',  head = TRUE, row.names = 1)
+no_pulse_DE
+```
+
+## Calculate and plot number of up/downregulated genes
+```{r}
+# Filter up/down regulated transcript
+lfc_t7_up           <- rownames(subset(t7_DE      , p.adjust(t7_DE$PValue, method="BH")<0.05 & logFC>1 ))
+lfc_t16_up          <- rownames(subset(t16_DE     , p.adjust(t7_DE$PValue, method="BH")<0.05 & logFC>1 ))
+lfc_pulse_up        <- rownames(subset(pulse_DE   , p.adjust(t7_DE$PValue, method="BH")<0.05 & logFC>1 ))
+lfc_no_pulse_up     <- rownames(subset(no_pulse_DE, p.adjust(t7_DE$PValue, method="BH")<0.05 & logFC>1 ))
+
+lfc_t7_down         <- rownames(subset(t7_DE      , p.adjust(t7_DE$PValue, method="BH")<0.05 & logFC<(-1) ))
+lfc_t16_down        <- rownames(subset(t16_DE     , p.adjust(t7_DE$PValue, method="BH")<0.05 & logFC<(-1) ))
+lfc_pulse_down      <- rownames(subset(pulse_DE   , p.adjust(t7_DE$PValue, method="BH")<0.05 & logFC<(-1) ))
+lfc_no_pulse_down   <- rownames(subset(no_pulse_DE, p.adjust(t7_DE$PValue, method="BH")<0.05 & logFC<(-1) ))
+
+
+
+# Wrute number of up/downregulated transcripts into a data frame
+t7_data <- data.frame(
+  name=c("up","down"),  
+  value=c(length(lfc_t7_up),length(lfc_t7_down))
+  )
+t16_data <- data.frame(
+  name=c("up","down") ,  
+  value=c(length(lfc_t16_up),length(lfc_t16_down))
+  )
+pulse_data <- data.frame(
+  name=c("up","down") ,  
+  value=c(length(lfc_pulse_up),length(lfc_pulse_down))
+  )
+no_pulse_data <- data.frame(
+  name=c("up","down") ,  
+  value=c(length(lfc_no_pulse_up),length(lfc_no_pulse_down))
+  )
+
+```
+
+## Generate Bar graphs
+```{r}
+b_t7 = ggplot(t7_data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity",aes(fill=name),width = 0.7,show.legend = FALSE)+
+  theme_classic(base_size = 16)+
+    scale_fill_manual(values=c("red","blue"),breaks=c("up","down"))+
+  geom_text(aes(label=value),position="stack",vjust=-0.1)+
+  xlab(NULL)+
+  ylab("Number of DEGs")
+
+b_t16 = ggplot(t16_data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity",aes(fill=name),width = 0.7,show.legend = FALSE)+
+  theme_classic(base_size = 16)+
+    scale_fill_manual(values=c("red","blue"),breaks=c("up","down"))+
+  geom_text(aes(label=value),position="stack",vjust=-0.5)+
+  xlab(NULL)+
+  ylab("Number of DEGs")
+
+b_pulse = ggplot(pulse_data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity",aes(fill=name),width = 0.7,show.legend = FALSE)+
+  theme_classic(base_size = 16)+
+    scale_fill_manual(values=c("red","blue"),breaks=c("up","down"))+
+  geom_text(aes(label=value),position="stack",vjust=-0.5)+
+  xlab(NULL)+
+  ylab("Number of DEGs")
+
+b_no_pulse = ggplot(no_pulse_data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity",aes(fill=name),width = 0.7,show.legend = FALSE)+
+  theme_classic(base_size = 16)+
+    scale_fill_manual(values=c("red","blue"),breaks=c("up","down"))+
+  geom_text(aes(label=value),position="stack",vjust=-0.5)+
+  xlab(NULL)+
+  ylab("Number of DEGs")
+```
+
+## Filter significantly up/downregulated genes
+```{r}
+spiders_res_edgeR_t7       <- data.frame(t7_DE)       %>% mutate(Significant = p.adjust(t7_DE$PValue      , method="BH")<0.05)
+spiders_res_edgeR_t16      <- data.frame(t16_DE)      %>% mutate(Significant = p.adjust(t16_DE$PValue     , method="BH")<0.05)
+spiders_res_edgeR_pulse    <- data.frame(pulse_DE)    %>% mutate(Significant = p.adjust(pulse_DE$PValue   , method="BH")<0.05)
+spiders_res_edgeR_no_pulse <- data.frame(no_pulse_DE) %>% mutate(Significant = p.adjust(no_pulse_DE$PValue, method="BH")<0.05)
+
+
+spiders_res_edgeR_t7$Significant      [spiders_res_edgeR_t7$Significant==TRUE       & spiders_res_edgeR_t7$logFC>1      ] <- "upregulated"
+spiders_res_edgeR_t16$Significant     [spiders_res_edgeR_t16$Significant==TRUE      & spiders_res_edgeR_t16$logFC>1     ] <- "upregulated"
+spiders_res_edgeR_pulse$Significant   [spiders_res_edgeR_pulse$Significant==TRUE    & spiders_res_edgeR_pulse$logFC>1   ] <- "upregulated"
+spiders_res_edgeR_no_pulse$Significant[spiders_res_edgeR_no_pulse$Significant==TRUE & spiders_res_edgeR_no_pulse$logFC>1] <- "upregulated"
+
+spiders_res_edgeR_t7$Significant      [spiders_res_edgeR_t7$Significant==TRUE      & spiders_res_edgeR_t7$logFC<(-1)       ] <- "downregulated"
+spiders_res_edgeR_t16$Significant     [spiders_res_edgeR_t16$Significant==TRUE      & spiders_res_edgeR_t16$logFC<(-1)     ] <- "downregulated"
+spiders_res_edgeR_pulse$Significant   [spiders_res_edgeR_pulse$Significant==TRUE    & spiders_res_edgeR_pulse$logFC<(-1)   ] <- "downregulated"
+spiders_res_edgeR_no_pulse$Significant[spiders_res_edgeR_no_pulse$Significant==TRUE & spiders_res_edgeR_no_pulse$logFC<(-1)] <- "downregulated"
+
+
+spiders_res_edgeR_t7$Significant      [spiders_res_edgeR_t7$Significant==FALSE       | spiders_res_edgeR_t7$Significant==TRUE       ] <- "unchange"
+spiders_res_edgeR_t16$Significant     [spiders_res_edgeR_t16$Significant==FALSE      | spiders_res_edgeR_t16$Significant==TRUE      ] <- "unchange"
+spiders_res_edgeR_pulse$Significant   [spiders_res_edgeR_pulse$Significant==FALSE    | spiders_res_edgeR_pulse$Significant==TRUE    ] <- "unchange"
+spiders_res_edgeR_no_pulse$Significant[spiders_res_edgeR_no_pulse$Significant==FALSE | spiders_res_edgeR_no_pulse$Significant==TRUE ] <- "unchange"
+```
+
+### Generate Volcano plots
+```{r}
+v_t7 = ggplot(spiders_res_edgeR_t7,aes(color=Significant)) + 
+        geom_point(aes(x = logFC, y = -log10(FDR))) + 
+        scale_color_manual(values=c( "red","black","blue"),breaks = c("upregulated","downregulated","unchange"))+
+        xlab("log fold change") + 
+        ylab("-log10 FDR") +
+        geom_hline(yintercept=1,color="black",linetype = 'dotted')+
+        geom_vline(xintercept=1,color="red",linetype = 'dotted')+ 
+        geom_vline(xintercept=-1,color="blue",linetype = 'dotted')+
+        theme_few()
+
+v_t16 = ggplot(spiders_res_edgeR_t16,aes(color=Significant)) + 
+        geom_point(aes(x = logFC, y = -log10(FDR))) + 
+        scale_color_manual(values=c( "red","black","blue"),breaks = c("upregulated","downregulated","unchange"))+
+        xlab("log fold change") + 
+        ylab("-log10 FDR") +
+        geom_hline(yintercept=1,color="black",linetype = 'dotted')+
+        geom_vline(xintercept=1,color="red",linetype = 'dotted')+ 
+        geom_vline(xintercept=-1,color="blue",linetype = 'dotted')+
+        theme_few()
+
+v_pulse = ggplot(spiders_res_edgeR_pulse,aes(color=Significant)) + 
+        geom_point(aes(x = logFC, y = -log10(FDR))) + 
+        scale_color_manual(values=c( "red","black","blue"),breaks = c("upregulated","downregulated","unchange"))+
+        xlab("log fold change") + 
+        ylab("-log10 FDR") +
+        geom_hline(yintercept=1,color="black",linetype = 'dotted')+
+        geom_vline(xintercept=1,color="red",linetype = 'dotted')+ 
+        geom_vline(xintercept=-1,color="blue",linetype = 'dotted')+
+        theme_few()
+
+v_no_pulse = ggplot(spiders_res_edgeR_no_pulse,aes(color=Significant)) + 
+        geom_point(aes(x = logFC, y = -log10(FDR))) + 
+        scale_color_manual(values=c( "red","black","blue"),breaks = c("upregulated","downregulated","unchange"))+
+        xlab("log fold change") + 
+        ylab("-log10 FDR") +
+        geom_hline(yintercept=1,color="black",linetype = 'dotted')+
+        geom_vline(xintercept=1,color="red",linetype = 'dotted')+ 
+        geom_vline(xintercept=-1,color="blue",linetype = 'dotted')+
+        theme_few()
+```
+
+
+# Combine plots in a full figure
+
+### et7
+```{r}
+b_t7 + v_t7 + plot_layout(ncol = 2)
+```
+
+### et16
+```{r}
+b_t16 + v_t16 + plot_layout(ncol = 2)
+```
+
+### Pulse
+```{r}
+b_pulse + v_pulse + plot_layout(ncol = 2)
+```
+
+### No Pulse
+```{r}
+b_no_pulse + v_no_pulse + plot_layout(ncol = 2)
+```
+
+
